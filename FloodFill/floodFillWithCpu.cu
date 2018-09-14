@@ -6,16 +6,23 @@
 
 using namespace std;
 
-void floodFillWithCpu(int** array, int rows, int cols, int xStarting, int yStarting, int newColor)
+int* floodFillWithCpu(int* arr, int rows, int cols, int xStarting, int yStarting, int newColor)
 {
 	int vertexCount = rows * cols;
-	bool* visited = new bool[vertexCount];
+	int* arrayToFill = (int*)malloc(vertexCount * sizeof(int));
+	for (int i = 0; i < vertexCount; i++)
+	{
+		arrayToFill[i] = arr[i];
+	}
+
+	bool* visited = (bool*)malloc(vertexCount * sizeof(bool));
 	for (int i = 0; i < vertexCount; i++)
 		visited[i] = false;
 	queue<int> queue;
-	int oldColor = array[yStarting][xStarting];
-
 	int startingPoint = xStarting + yStarting * cols;
+
+	int oldColor = arr[startingPoint];
+
 	queue.push(startingPoint);
 
 	while (!queue.empty())
@@ -23,39 +30,67 @@ void floodFillWithCpu(int** array, int rows, int cols, int xStarting, int yStart
 		int v = queue.front();
 		queue.pop();
 
-		int y = v / cols;
-		int x = v % cols;
-		array[v / cols][v % cols] = newColor;
+		if (arr[v] != oldColor || visited[v]) continue;
+		visited[v] = true;
+		arrayToFill[v] = newColor;
 
-		if (y > 0 && !visited[v - cols] && array[y - 1][x] == oldColor)
-		{
-			queue.push(v - cols);
-			visited[v - cols] = true;
-		}
-		if (y < rows - 1 && !visited[v + cols] && array[y + 1][x] == oldColor)
-		{
-			queue.push(v + cols);
-			visited[v + cols] = true;
-		}
-		if (x > 0 && !visited[v - 1] && array[y][x - 1] == oldColor)
-		{
-			queue.push(v - 1);
-			visited[v - 1] = true;
-		}
-		if (x < cols - 1 && !visited[v + 1] && array[y][x + 1] == oldColor)
+		int x = v % cols;
+		int y = v / cols;
+
+		if (x == 0 && y == 0)
 		{
 			queue.push(v + 1);
-			visited[v + 1] = true;
+			queue.push(v + cols);
 		}
-	}
+		else if (x == 0 && y == rows - 1)
+		{
+			queue.push(v + 1);
+			queue.push(v - cols);
+		}
+		else if (x == cols - 1 && y == 0)
+		{
+			queue.push(v - 1);
+			queue.push(v + cols);
+		}
+		else if (x == cols - 1 && y == rows - 1)
+		{
+			queue.push(v - 1);
+			queue.push(v - cols);
+		}
+		else if (x == 0)
+		{
+			queue.push(v + 1);
+			queue.push(v + cols);
+			queue.push(v - cols);
+		}
+		else if (x == cols - 1)
+		{
+			queue.push(v - 1);
+			queue.push(v + cols);
+			queue.push(v - cols);
+		}
+		else if (y == 0)
+		{
+			queue.push(v - 1);
+			queue.push(v + 1);
+			queue.push(v + cols);
+		}
+		else if (y == rows - 1)
+		{
+			queue.push(v - 1);
+			queue.push(v + 1);
+			queue.push(v - cols);
+		}
+		else
+		{
+			queue.push(v - 1);
+			queue.push(v + 1);
+			queue.push(v + cols);
+			queue.push(v - cols);
+		}
 
-	/*int size = n * m;
-	struct Node* columnIndices = (struct Node*) malloc(size * sizeof(struct Node));
-	for (int i = 0; i < size; i++)
-	{
-	struct Node node;
-	node.r =
-	}*/
+	}
+	return arrayToFill;
 }
 
 void transform1Dto2D(int* x, int* y, int index1D, int)

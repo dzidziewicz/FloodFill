@@ -1,4 +1,3 @@
 #pragma once
-#include "dataStructures.h"
 
-void floodFillWithCpu(int** array, int height, int width, int xStarting, int yStarting, int newColor);
+int* floodFillWithCpu(int* arr, int rows, int cols, int xStarting, int yStarting, int newColor);

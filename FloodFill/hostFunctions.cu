@@ -34,9 +34,7 @@ void bfs(int** array, int height, int width, int xStarting, int yStarting, int n
 	}
 	rowRangeOffsets[0] = 0;
 	thrust::inclusive_scan(neighboursCounts, neighboursCounts + verticesCount, rowRangeOffsets + 1);
-	/*for (int i = 0; i <= verticesCount; i++)
-		printf("%d ", rowRangeOffsets[i]);
-	printf("\n");*/
+
 	int* columnIndices = (int*)malloc(rowRangeOffsets[verticesCount] * sizeof(int));
 
 	// construct array C with neighbours of every vertex
@@ -138,14 +136,6 @@ void prepareArrays(int* inputArr, int** R, int** C, int rows, int cols)
 	}
 	(*R)[verticesCount] = 0;
 	thrust::exclusive_scan((*R), (*R) + verticesCount + 1, (*R));
-
-	//for (int i = 0; i < verticesCount + 1; i++)
-	//	printf("%d ", (*R)[i]);
-	//printf("\n");
-
-	//for (int i = 0; i < edgesCount; i++)
-	//	printf("%d ", (*C)[i]);
-	//printf("\n");
 }
 
 cudaError_t deviceMalloc(int** dest, int length)
@@ -165,24 +155,3 @@ cudaError_t deviceMemcpy(int* dest, int* source, int length, cudaMemcpyKind dire
 	}
 	return cudaStatus;
 }
-
-//int main()
-//{
-//
-//	cudaError_t cudaStatus;// = addWithCuda(c, a, b, arraySize);
-//	if (cudaStatus != cudaSuccess) {
-//		fprintf(stderr, "addWithCuda failed!");
-//		return 1;
-//	}
-//	
-//
-//	// cudaDeviceReset must be called before exiting in order for profiling and
-//	// tracing tools such as Nsight and Visual Profiler to show complete traces.
-//	cudaStatus = cudaDeviceReset();
-//	if (cudaStatus != cudaSuccess) {
-//		fprintf(stderr, "cudaDeviceReset failed!");
-//		return 1;
-//	}
-//
-//	return 0;
-//}

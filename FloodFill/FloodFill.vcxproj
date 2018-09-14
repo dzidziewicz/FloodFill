@@ -89,12 +89,13 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="deviceFunctions.cu">
       <FileType>CUR</FileType>
     </CudaCompile>
+    <CudaCompile Include="FloodFillWithGpu.cu" />
     <CudaCompile Include="hostFunctions.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dataStructures.h" />
     <ClInclude Include="deviceFunctions.h" />
     <ClInclude Include="floodFillWithCpu.h" />
+    <ClInclude Include="floodFillWithGpu.h" />
     <ClInclude Include="hostFunctions.h" />
   </ItemGroup>
   <ItemGroup>
