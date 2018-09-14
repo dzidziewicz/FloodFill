@@ -3,11 +3,9 @@
 #include "device_launch_parameters.h"
 #include <device_functions.h>
 
-#define THREAD_NUM 13
+#define THREAD_NUM 100
 
 __global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R,
-	//int* rArrIn, int* rEndArrayIn,
 	int* neighboursPrefixSum,
 	int* visited, int* totalNeighbours,
-	//int* rArrOut, int* rEndArrOut, 
-	int* neighbourCountsOut);
+	int* neighbourCountsOut, int newColor, int startingColor);

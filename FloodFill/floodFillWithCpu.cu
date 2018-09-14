@@ -6,16 +6,16 @@
 
 using namespace std;
 
-void floodFillWithCpu(int** array, int height, int width, int xStarting, int yStarting, int newColor)
+void floodFillWithCpu(int** array, int rows, int cols, int xStarting, int yStarting, int newColor)
 {
-	int vertexCount = height * width;
+	int vertexCount = rows * cols;
 	bool* visited = new bool[vertexCount];
 	for (int i = 0; i < vertexCount; i++)
 		visited[i] = false;
 	queue<int> queue;
 	int oldColor = array[yStarting][xStarting];
 
-	int startingPoint = xStarting + yStarting * width;
+	int startingPoint = xStarting + yStarting * cols;
 	queue.push(startingPoint);
 
 	while (!queue.empty())
@@ -23,26 +23,26 @@ void floodFillWithCpu(int** array, int height, int width, int xStarting, int ySt
 		int v = queue.front();
 		queue.pop();
 
-		int y = v / width;
-		int x = v % width;
-		array[v / width][v % width] = newColor;
+		int y = v / cols;
+		int x = v % cols;
+		array[v / cols][v % cols] = newColor;
 
-		if (y > 0 && !visited[v - width] && array[y - 1][x] == oldColor)
+		if (y > 0 && !visited[v - cols] && array[y - 1][x] == oldColor)
 		{
-			queue.push(v - width);
-			visited[v - width] = true;
+			queue.push(v - cols);
+			visited[v - cols] = true;
 		}
-		if (y < height - 1 && !visited[v + width] && array[y + 1][x] == oldColor)
+		if (y < rows - 1 && !visited[v + cols] && array[y + 1][x] == oldColor)
 		{
-			queue.push(v + width);
-			visited[v + width] = true;
+			queue.push(v + cols);
+			visited[v + cols] = true;
 		}
 		if (x > 0 && !visited[v - 1] && array[y][x - 1] == oldColor)
 		{
 			queue.push(v - 1);
 			visited[v - 1] = true;
 		}
-		if (x < width - 1 && !visited[v + 1] && array[y][x + 1] == oldColor)
+		if (x < cols - 1 && !visited[v + 1] && array[y][x + 1] == oldColor)
 		{
 			queue.push(v + 1);
 			visited[v + 1] = true;

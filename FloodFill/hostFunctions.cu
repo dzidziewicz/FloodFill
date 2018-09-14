@@ -56,6 +56,97 @@ void bfs(int** array, int height, int width, int xStarting, int yStarting, int n
 
 }
 
+int getEdgesCount(int rows, int cols)
+{
+	return 4 * (rows - 2) * (cols - 2) + 3 * 2 * (rows - 2) + 3 * 2 * (cols - 2) + 8;
+}
+
+void prepareArrays(int* inputArr, int** R, int** C, int rows, int cols)
+{
+	int verticesCount = rows * cols;
+	*R = (int*)malloc((verticesCount + 1) * sizeof(int));
+	int edgesCount = getEdgesCount(rows, cols);
+
+	*C = (int*)malloc(edgesCount * sizeof(int));
+
+	for (int i = 0, v = 0; i < edgesCount; v++)
+	{
+		int x = v % cols;
+		int y = v / cols;
+
+		if (x == 0 && y == 0)
+		{
+			(*C)[i++] = v + 1;
+			(*C)[i++] = v + cols;
+			(*R)[v] = 2;
+		}
+		else if (x == 0 && y == rows - 1)
+		{
+			(*C)[i++] = v + 1;
+			(*C)[i++] = v - cols;
+			(*R)[v] = 2;
+		}
+		else if (x == cols - 1 && y == 0)
+		{
+			(*C)[i++] = v - 1;
+			(*C)[i++] = v + cols;
+			(*R)[v] = 2;
+		}
+		else if (x == cols - 1 && y == rows - 1)
+		{
+			(*C)[i++] = v - 1;
+			(*C)[i++] = v - cols;
+			(*R)[v] = 2;
+		}
+		else if (x == 0)
+		{
+			(*C)[i++] = v + 1;
+			(*C)[i++] = v + cols;
+			(*C)[i++] = v - cols;
+			(*R)[v] = 3;
+		}
+		else if (x == cols - 1)
+		{
+			(*C)[i++] = v - 1;
+			(*C)[i++] = v + cols;
+			(*C)[i++] = v - cols;
+			(*R)[v] = 3;
+		}
+		else if (y == 0)
+		{
+			(*C)[i++] = v - 1;
+			(*C)[i++] = v + 1;
+			(*C)[i++] = v + cols;
+			(*R)[v] = 3;
+		}
+		else if (y == rows - 1)
+		{
+			(*C)[i++] = v - 1;
+			(*C)[i++] = v + 1;
+			(*C)[i++] = v - cols;
+			(*R)[v] = 3;
+		}
+		else
+		{
+			(*C)[i++] = v - 1;
+			(*C)[i++] = v + 1;
+			(*C)[i++] = v + cols;
+			(*C)[i++] = v - cols;
+			(*R)[v] = 4;
+		}
+
+	}
+	(*R)[verticesCount] = 0;
+	thrust::exclusive_scan((*R), (*R) + verticesCount + 1, (*R));
+
+	//for (int i = 0; i < verticesCount + 1; i++)
+	//	printf("%d ", (*R)[i]);
+	//printf("\n");
+
+	//for (int i = 0; i < edgesCount; i++)
+	//	printf("%d ", (*C)[i]);
+	//printf("\n");
+}
 
 cudaError_t deviceMalloc(int** dest, int length)
 {

@@ -5,11 +5,9 @@
 #include "deviceFunctions.h"
 
 __global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R,
-	//int* rArrIn, int* rEndArrayIn,
 	int* neighboursPrefixSum,
 	int* visited, int* totalNeighbours,
-	//int* rArrOut, int* rEndArrOut, 
-	int* neighbourCountsOut)
+	int* neighbourCountsOut, int newColor, int startingColor)
 {
 	__shared__ int neighbours[THREAD_NUM];
 
@@ -25,7 +23,7 @@ __global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R,
 		r = R[v];// rArrIn[v];					// index of first v's neighbour from C array
 		rEnd = R[v + 1];// rEndArrayIn[v];			// index of last v's neighbour from C array
 		index = neighboursPrefixSum[threadIdx.x];
-		visited[v] = 1;
+		visited[v] = newColor;
 	}
 	if (v == 13)
 	{
@@ -35,7 +33,7 @@ __global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R,
 	int remain;
 	while ((remain = *totalNeighbours - blockProgress) > 0)
 	{
-		if (v != -1 && index < *totalNeighbours)
+		if (v != -1 && index < *totalNeighbours && index >= 0)
 		{
 			// put vertex v's neighbours to shared memory
 			while ((index < blockProgress + THREAD_NUM)
@@ -50,7 +48,7 @@ __global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R,
 		// each thread gets a vertex from shared memory
 		if (threadIdx.x < remain && threadIdx.x < THREAD_NUM) {
 			int v = C[neighbours[threadIdx.x]];
-			if (visited[v] == 1)
+			if (visited[v] != startingColor)
 			{
 				v = -1;
 				neighbourCountsOut[blockProgress + threadIdx.x] = 0;
