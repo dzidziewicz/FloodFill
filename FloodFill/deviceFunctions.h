@@ -3,7 +3,7 @@
 #include "device_launch_parameters.h"
 #include <device_functions.h>
 
-#define THREAD_NUM 10
+#define THREAD_NUM 13
 
 __global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R,
 	//int* rArrIn, int* rEndArrayIn,

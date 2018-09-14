@@ -4,18 +4,18 @@
 #include "device_launch_parameters.h"
 #include "deviceFunctions.h"
 
-__global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R, 
+__global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R,
 	//int* rArrIn, int* rEndArrayIn,
 	int* neighboursPrefixSum,
-	int* visited, int* totalNeighbours, 
+	int* visited, int* totalNeighbours,
 	//int* rArrOut, int* rEndArrOut, 
 	int* neighbourCountsOut)
 {
 	__shared__ int neighbours[THREAD_NUM];
 
-	if (threadIdx.x > 0)
+	if (*totalNeighbours == 1 && threadIdx.x > 0)
 	{
-		neighbours[0] = 1;
+		//neighbours[0] = 1;
 	}
 
 	int v = queueIn[threadIdx.x];
@@ -27,11 +27,15 @@ __global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R,
 		index = neighboursPrefixSum[threadIdx.x];
 		visited[v] = 1;
 	}
+	if (v == 13)
+	{
+		//neighbours[0] = 1;
+	}
 	int blockProgress = 0;
 	int remain;
 	while ((remain = *totalNeighbours - blockProgress) > 0)
 	{
-		if (v != -1)
+		if (v != -1 && index < *totalNeighbours)
 		{
 			// put vertex v's neighbours to shared memory
 			while ((index < blockProgress + THREAD_NUM)
@@ -46,10 +50,18 @@ __global__ void gatherScan(int* queueIn, int*queueOut, int* C, int* R,
 		// each thread gets a vertex from shared memory
 		if (threadIdx.x < remain && threadIdx.x < THREAD_NUM) {
 			int v = C[neighbours[threadIdx.x]];
+			if (visited[v] == 1)
+			{
+				v = -1;
+				neighbourCountsOut[blockProgress + threadIdx.x] = 0;
+			}
+			else
+			{
+				int newR = R[v];
+				int newREnd = R[v + 1];
+				neighbourCountsOut[blockProgress + threadIdx.x] = newREnd - newR;
+			}
 			queueOut[blockProgress + threadIdx.x] = v;
-			int newR = /*rArrOut[blockProgress + threadIdx.x] =*/ R[v];
-			int newREnd/* = rEndArrOut[blockProgress + threadIdx.x] */ = R[v + 1];
-			neighbourCountsOut[blockProgress + threadIdx.x] = newREnd - newR;
 		}
 		blockProgress += THREAD_NUM;
 		__syncthreads();
